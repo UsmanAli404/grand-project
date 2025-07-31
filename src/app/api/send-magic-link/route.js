@@ -13,7 +13,7 @@ export async function POST(req) {
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY // Use ANON key instead of service_role
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     )
 
     const { error: signInError } = await supabase.auth.signInWithOtp({

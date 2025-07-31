@@ -51,11 +51,13 @@ export default function LoginPage() {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center p-4">
-      <Label className="text-2xl sm:text-3xl font-semibold mb-20 sm:mb-15">Login via Magic Link</Label>
+      <Label className="text-2xl sm:text-3xl font-semibold mb-20 sm:mb-15">
+        Login via Magic Link ✨
+      </Label>
 
       <div className="w-full max-w-sm border rounded-md p-6 space-y-4 shadow-md">
         <div className="space-y-1">
-          <Label htmlFor="email" className={"mb-2"}>Email</Label>
+          <Label htmlFor="email" className="mb-2">Email</Label>
           <Input
             id="email"
             type="email"
@@ -65,7 +67,29 @@ export default function LoginPage() {
           />
         </div>
 
-        <Button onClick={handleMagicLink} disabled={loading} className="w-full">
+        <Button onClick={handleMagicLink} disabled={loading} className="w-full flex items-center justify-center gap-2">
+          {loading && (
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              />
+            </svg>
+          )}
           {loading ? "Sending..." : "Send Magic Link"}
         </Button>
 
