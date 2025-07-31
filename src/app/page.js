@@ -1,12 +1,33 @@
-import { Label } from "@/components/ui/label";
+'use client'
 
-export default function Home() {
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabaseClient"
+import { Loader2 } from "lucide-react"
+
+export default function HomePage() {
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession()
+      const session = data.session
+      console.log(session);
+
+      if (session) {
+        router.push("/dashboard")
+      } else {
+        router.push("/login")
+      }
+    }
+
+    checkAuth()
+  }, [router])
+
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
-      <Label className="">Welcome to NextHire</Label>
-      <div className="max-w-sm border rounded-md p-4">
-        <Label className="">Welcome to NextHire</Label>
-      </div>
+    <div className="w-full h-screen flex items-center justify-center">
+      <Loader2 className="animate-spin h-6 w-6" />
     </div>
-  );
+  )
 }
