@@ -1,11 +1,28 @@
-// lib/auth.js
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+// lib/authStatus.js
+'use client'
 
-export async function getUserIdFromSession(req) {
-  const supabase = createRouteHandlerClient({ cookies: () => req.cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+import { supabase } from "@/lib/supabaseClient"
 
-  return session?.user?.id;
+/**
+ * Asynchronously checks if the user is authenticated.
+ * @returns {Promise<{ isAuthenticated: boolean, session: object|null }>}
+ */
+export async function checkAuthStatus() {
+  try {
+    const { data, error } = await supabase.auth.getSession()
+
+    if (error) {
+      console.error("Auth check failed:", error.message)
+      return { isAuthenticated: false, session: null }
+    }
+
+    const session = data.session
+    return {
+      isAuthenticated: !!session,
+      session
+    }
+  } catch (err) {
+    console.error("Unexpected error in auth check:", err)
+    return { isAuthenticated: false, session: null }
+  }
 }

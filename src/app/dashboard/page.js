@@ -7,6 +7,9 @@ import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Sun, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Loader2, X } from "lucide-react";
+import { checkAuthStatus } from "@/lib/auth";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -23,20 +26,36 @@ export default function Dashboard() {
   }, []);
 
   const handleTailorResume = async () => {
-    // Client-side validation
-    if (!resumeFile) {
-      setMessage("Please upload a resume file.");
-      console.error("No resume file uploaded.");
-      return;
-    }
     if (!jobDescription.trim()) {
-      setMessage("Please enter a job description.");
-      console.error("No job description entered.");
+      toast.warning("Job description missing", {
+        description: "Please enter a job description.",
+        duration: 4000,
+        position: 'top-center',
+      });
       return;
     }
 
-    setMessage("Sending data to server...");
-    setLoading(true); // Set loading state to true
+    if (!resumeFile) {
+      toast.warning("Upload required", {
+        description: "Please upload a resume file.",
+        duration: 4000,
+        position: 'top-center',
+      });
+      return;
+    }
+
+    const { isAuthenticated, session } = await checkAuthStatus()
+
+    if (!isAuthenticated) {
+      toast.error("Authentication Error", {
+        description: "You must be logged in to upload your resume.",
+        duration: 4000,
+        position: "top-center",
+      });
+      return;
+    }
+
+    setLoading(true);
 
     const formData = new FormData();
     formData.append('resume', resumeFile);
@@ -46,42 +65,55 @@ export default function Dashboard() {
       const res = await fetch('/api/upload-resume', {
         method: 'POST',
         body: formData,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
-      // Read the response text first
-      let text = await res.text();
+      const text = await res.text();
       let data;
 
-      // Attempt to parse as JSON, handle non-JSON responses
       try {
         data = JSON.parse(text);
       } catch (e) {
         console.error("Non-JSON response received from server:", text);
-        setMessage("Server returned an unexpected response format. Check console for details.");
+        toast("Unexpected Server Response", {
+          description: "Check the console for debugging info.",
+          duration: 6000,
+          position: 'top-center',
+        });
         throw new Error("Unexpected server response format.");
       }
 
       if (!res.ok) {
-        // If response is not OK (e.g., 400, 500 status)
-        setMessage(data.error || "Failed to send data to server.");
+        toast.error("Server Error", {
+          description: data.error || "Failed to send data to server.",
+          duration: 5000,
+          position: 'top-center',
+        });
         throw new Error(data.error || "Server communication failed.");
-      } else {
-        // If response is OK
-        console.log("--- Client Received Data ---");
-        console.log("Server Message:", data.message);
-        console.log("Received Job Description:", data.receivedJobDescription);
-        console.log("Received Resume Content:\n", data.receivedResumeContent.substring(0, 500) + (data.receivedResumeContent.length > 500 ? '...' : '')); // Print first 500 chars
-        console.log("--------------------------");
-        setMessage("Data sent and received successfully! Check console for details.");
       }
+
+      console.log("--- Client Received Data ---");
+      console.log("Server Message:", data.message);
+      console.log("Received Job Description:", data.receivedJobDescription);
+      console.log("Received Resume Content:\n", data.receivedResumeContent.substring(0, 500) + (data.receivedResumeContent.length > 500 ? '...' : ''));
+      console.log("--------------------------");
+
+      toast.success("Success", {
+        description: "Data sent and received successfully!",
+        duration: 3000,
+        position: 'top-center',
+      });
     } catch (error) {
       console.error("Error in handleTailorResume:", error);
-      // Update message for user, ensuring it doesn't overwrite specific error messages
-      if (!message.includes("Unexpected server response")) {
-        setMessage(`Error: ${error.message}`);
-      }
+      toast.error("Error", {
+        description: error.message,
+        duration: 5000,
+        position: "top-center"
+      });
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
@@ -130,24 +162,39 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <Label className="text-2xl mb-3">Drop your Resume below</Label>
+
           <div
             {...getRootProps()}
-            className="min-h-40 lg:min-h-60 flex items-center justify-center border-2 border-dashed border-gray-400 rounded-md p-8 text-center cursor-pointer hover:border-black transition-colors"
+            className="relative min-h-40 lg:min-h-60 flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-md p-8 text-center cursor-pointer hover:border-black transition-colors"
           >
             <input {...getInputProps()} />
-            {
-              isDragActive
-                ? <p className="text-gray-600">Drop the files here ...</p>
-                : resumeFile
-                  ? <p className="text-gray-800">{resumeFile.name} selected</p>
-                  : <p className="text-gray-600">Drag & drop a file here, or click to browse (.pdf, .txt, .doc, .docx)</p>
-            }
+
+            {resumeFile && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setResumeFile(null);
+                }}
+                className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            )}
+
+            {isDragActive ? (
+              <p className="text-gray-600">Drop the files here ...</p>
+            ) : resumeFile ? (
+              <p className="text-gray-800">{resumeFile.name} selected</p>
+            ) : (
+              <p className="text-gray-600">
+                Drag & drop a file here, or click to browse (.pdf, .txt, .doc, .docx)
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Message display area */}
         {message && (
           <div className={`mb-4 p-3 rounded-md text-center ${message.includes("Error") ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
             {message}
@@ -155,8 +202,12 @@ export default function Dashboard() {
         )}
 
         <Button onClick={handleTailorResume} disabled={loading}>
+          {loading && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
           {loading ? 'Sending Data...' : 'Send Data'}
         </Button>
+
       </div>
     </div>
   );
