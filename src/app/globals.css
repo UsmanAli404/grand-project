@@ -130,3 +130,34 @@ body{
 [data-sonner-toast] > div > div:nth-child(2) {
   color: black !important;
 }
+
+@keyframes fade-move-down {
+  0% {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.arrow-down {
+  animation: fade-move-down 1.5s ease-in-out infinite;
+}
+
+@keyframes scalePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.animate-scale {
+  animation: scalePulse 1.4s ease-in-out infinite;
+}
