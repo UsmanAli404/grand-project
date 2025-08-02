@@ -197,15 +197,13 @@ export default function UploadResumePage() {
         {loading ? 'Tailoring Resume...' : 'Tailor Resume'}
       </Button>
 
-      <div className="flex justify-center mb-10">
+      {entries.length > 0 && (
+        <div className="flex justify-center mb-10">
         <ChevronDown className="arrow-down w-6 h-6"/>
-      </div>
+        </div>
+      )}
 
-      {loadingEntries ? (
-        <Label className="text-lg md:text-2xl mb-4">Loading previous entries...</Label>
-      ) : entries.length === 0 ? (
-        <Label className="text-lg md:text-2xl mb-4">No previous entries found.</Label>
-      ) : (
+      {entries.length > 0 && (
         <Label className="text-lg md:text-2xl mb-4">Previously tailored resumes:</Label>
       )}
 

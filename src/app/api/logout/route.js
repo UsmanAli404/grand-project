@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 
-export default async function handler(req, res) {
+export default async function GET(req, res) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

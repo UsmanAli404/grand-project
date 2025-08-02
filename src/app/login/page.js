@@ -11,6 +11,7 @@ export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
+  const [linkSent, setLinkSent] = useState(false)
 
   const handleMagicLink = async () => {
     if (!email) {
@@ -22,6 +23,7 @@ export default function LoginPage() {
     }
 
     setLoading(true)
+    setLinkSent(false)
     try {
       const res = await fetch("/api/send-magic-link", {
         method: "POST",
@@ -38,6 +40,8 @@ export default function LoginPage() {
         descriptionClassName: "text-black",
         position: 'top-center',
       })
+
+      setLinkSent(true);
     } catch (err) {
       toast.error("Login failed", {
         description: err.message,
@@ -50,7 +54,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center p-4">
+    <div className="relative w-full h-full flex flex-col justify-center items-center p-4">
+      <Button
+        variant="link"
+        className="absolute top-4 left-6 text-xl font-bold hover:cursor-pointer"
+        onClick={() => router.push('/dashboard')}
+      >
+        NextHire
+      </Button>
+
       <Label className="text-2xl sm:text-3xl font-semibold mb-20 sm:mb-15">
         Login via Magic Link ✨
       </Label>
@@ -94,7 +106,7 @@ export default function LoginPage() {
         </Button>
 
         <p className="text-sm text-center text-muted-foreground">
-          A login link will be sent to your email.
+          {linkSent ? "A login link has been sent to your email." : "A login link will be sent to your email."}
         </p>
       </div>
     </div>
