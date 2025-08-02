@@ -55,6 +55,26 @@ export async function POST(req) {
       return NextResponse.json({ error: 'User not authenticated.' }, { status: 401 });
     }
 
+    const aiResponse = await fetch('http://localhost:5678/webhook/tailor-resume', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        resume: resumeContent,
+        jobDescription: jobDescription
+      })
+    });
+
+    const aiData = await aiResponse.json();
+
+    if (!aiResponse.ok) {
+      throw new Error(aiData.error || 'Failed to get tailored resume from AI API');
+    }
+
+    const tailoredResumeText = aiData.text || 'No text response received.';
+    const tailoredResumeLatex = aiData.latex || 'No LaTeX response received.';
+
     const mongoClient = new MongoClient(process.env.MONGODB_URI);
     await mongoClient.connect();
     const db = mongoClient.db();
@@ -64,16 +84,17 @@ export async function POST(req) {
       userId: user.id,
       resumeText: resumeContent,
       jobDesc: jobDescription,
-      tailoredResume: null,
+      tailoredResumeText: tailoredResumeText,
+      tailoredResumeLatex: tailoredResumeLatex,
       createdAt: new Date()
     });
 
     await mongoClient.close();
 
     return NextResponse.json({
-      message: 'File contents saved to MongoDB successfully!',
-      receivedJobDescription: jobDescription,
-      receivedResumeContent: resumeContent
+      message: 'Tailored resume created and stored successfully!',
+      tailoredText: tailoredResumeText,
+      tailoredLatex: tailoredResumeLatex
     }, { status: 200 });
 
   } catch (error) {
