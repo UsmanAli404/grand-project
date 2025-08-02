@@ -82,7 +82,7 @@ export default function ResumeDetailPage() {
 
       <Label className="text-2xl font-semibold mb-4 block">Detailed Resume View</Label>
 
-      <div className="bg-gray-50 border rounded-md p-4 space-y-4 text-sm">
+      <div className="border rounded-md p-4 space-y-4 text-sm">
         <div>
           <div className="flex items-center justify-between">
             <strong>Job Description:</strong>
@@ -101,7 +101,7 @@ export default function ResumeDetailPage() {
             </Button>
           </div>
           {/* <p className="mt-1 whitespace-pre-wrap">{entry.tailoredResumeText}</p> */}
-          <pre className="mt-2 bg-white p-2 rounded border overflow-x-auto text-sm">{entry.tailoredResumeText}</pre>
+          <pre className="mt-2 p-2 rounded border overflow-x-auto text-sm">{entry.tailoredResumeText}</pre>
         </div>
 
         <div>
@@ -111,7 +111,7 @@ export default function ResumeDetailPage() {
               <ClipboardCopy className="w-4 h-4" />
             </Button>
           </div>
-          <pre className="mt-2 bg-white p-2 rounded border overflow-x-auto text-sm">{entry.tailoredResumeLatex}</pre>
+          <pre className="mt-2 p-2 rounded border overflow-x-auto text-sm">{entry.tailoredResumeLatex}</pre>
         </div>
 
         <div className="text-xs text-gray-500">

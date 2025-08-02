@@ -161,3 +161,7 @@ body{
 .animate-scale {
   animation: scalePulse 1.4s ease-in-out infinite;
 }
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

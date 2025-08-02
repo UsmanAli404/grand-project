@@ -146,7 +146,7 @@ export default function UploadResumePage() {
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
           rows={5}
-          className="w-full min-h-40 lg:min-h-60 border border-gray-300 rounded-md p-3 text-sm resize-none"
+          className="w-full min-h-40 lg:min-h-60 border border-gray-500 dark:text-white rounded-md p-3 text-sm resize-none"
           placeholder="Paste or write your job description here..."
         />
       </div>
@@ -192,13 +192,13 @@ export default function UploadResumePage() {
         </div>
       )}
 
-      <Button onClick={handleTailorResume} disabled={loading} className={"mb-4"}>
+      <Button onClick={handleTailorResume} disabled={loading} className={"mb-4 hover:cursor-pointer"}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {loading ? 'Tailoring Resume...' : 'Tailor Resume'}
       </Button>
 
       <div className="flex justify-center mb-10">
-        <ChevronDown className="arrow-down w-6 h-6" />
+        <ChevronDown className="arrow-down w-6 h-6"/>
       </div>
 
       {loadingEntries ? (
@@ -210,18 +210,18 @@ export default function UploadResumePage() {
       )}
 
       {entries.length>0 && (
-        <ScrollArea className="h-100 w-full rounded-md border p-2 mb-12">
+        <ScrollArea className="h-100 w-full rounded-md border p-2 mb-12 dark:border-white">
           <div className="space-y-2">
             {entries.map((entry, idx) => (
               <div
                 key={idx}
                 className="border border-gray-300 rounded-md p-3 text-sm bg-gray-50"
               >
-                <div className="mb-1">
+                <div className="mb-1 dark:text-black">
                   <span className="font-medium">Job:</span>{" "}
                   {entry.jobDesc?.slice(0, 100)}...
                 </div>
-                <div className="mb-1">
+                <div className="mb-1 dark:text-black">
                   <span className="font-medium">Resume:</span>{" "}
                   {entry.resumeText?.slice(0, 100)}...
                 </div>
@@ -229,9 +229,9 @@ export default function UploadResumePage() {
                   {new Date(entry.createdAt).toLocaleString()}
                 </div>
                 <Button
-                  variant="outline"
+                  variant={localStorage.getItem('theme') === 'dark' ? "default" : "default"}
                   size="sm"
-                  className="mt-2"
+                  className="mt-2 dark:text-white dark:bg-black hover:cursor-pointer"
                   onClick={() => router.push(`/dashboard/resume/${entry._id}`)}
                 >
                   Detailed View
