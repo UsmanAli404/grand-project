@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 export default function TailoredResumePage() {
   const [tailored, setTailored] = useState(null);
   const [createdAt, setCreatedAt] = useState('');
+  const [activeTab, setActiveTab] = useState('text');
   const router = useRouter();
 
   useEffect(() => {
@@ -49,21 +50,34 @@ export default function TailoredResumePage() {
       <div className="flex gap-4 mb-6">
         <Button
           onClick={async () => {
-            const res = await fetch('/api/latex-to-pdf', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ latex: tailored.tailoredLatex }),
-            });
+              try {
+                  const res = await fetch('/api/latex-to-pdf', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ latex: tailored.tailoredLatex }),
+                  });
 
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'resume.pdf';
-            a.click();
-            URL.revokeObjectURL(url);
+                  if (res.ok) { // Check if the API call was successful (status 200-299)
+                      const blob = await res.blob();
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'resume.pdf';
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success("PDF Downloaded successfully!", { position: "top-center" });
+                  } else {
+                      // If the response is not OK, try to read error message from server
+                      const errorData = await res.json();
+                      console.error('Error downloading PDF:', errorData);
+                      toast.error(`Failed to download PDF: ${errorData.message || 'Unknown error'}`, { position: "top-center" });
+                  }
+              } catch (error) {
+                  console.error('Network or unexpected error:', error);
+                  toast.error(`An unexpected error occurred: ${error.message}`, { position: "top-center" });
+              }
           }}
         >
           Download PDF
@@ -101,24 +115,22 @@ export default function TailoredResumePage() {
             variant="outline"
             size="sm"
             onClick={() => {
-              const active = document.querySelector('[data-state="active"]');
-              const value = active?.getAttribute('data-value');
-
-              if (value === 'text') handleCopy(tailored.tailoredText, 'Tailored Text copied');
-              else if (value === 'latex') handleCopy(tailored.tailoredLatex, 'LaTeX source copied');
-              else if (value === 'original') handleCopy(tailored.originalText, 'Original Resume copied');
+              if (activeTab === 'text') handleCopy(tailored.tailoredText, 'Tailored Text copied');
+              else if (activeTab === 'latex') handleCopy(tailored.tailoredLatex, 'LaTeX source copied');
+              else if (activeTab === 'original') handleCopy(tailored.originalText, 'Original Resume copied');
             }}
           >
             <ClipboardCopy className="h-4 w-4 mr-2" />
             Copy
           </Button>
+
         </div>
 
-        <Tabs defaultValue="text" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-4">
             <TabsTrigger value="text">Tailored (Text)</TabsTrigger>
             <TabsTrigger value="latex">Tailored (LaTeX)</TabsTrigger>
-            <TabsTrigger value="origional">Origional Resume</TabsTrigger>
+            <TabsTrigger value="original">Original Resume</TabsTrigger>
           </TabsList>
 
           <TabsContent value="text">
@@ -133,9 +145,9 @@ export default function TailoredResumePage() {
             </pre>
           </TabsContent>
 
-          <TabsContent value="origional">
+          <TabsContent value="original">
             <pre className="bg-gray-100 p-4 rounded-md whitespace-pre-wrap overflow-auto">
-              {tailored.origionalText}
+              {tailored.originalText}
             </pre>
           </TabsContent>
         </Tabs>

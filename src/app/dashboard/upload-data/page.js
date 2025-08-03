@@ -80,7 +80,7 @@ export default function UploadResumePage() {
       toast.success("Success", { description: "Resume tailored successfully!", position: "top-center", duration: 2000 });
 
       localStorage.setItem('tailoredResume', JSON.stringify({
-        origionalText: data.resumeText,
+        originalText: data.resumeText,
         tailoredText: data.tailoredText,
         tailoredLatex: data.tailoredLatex
       }));
