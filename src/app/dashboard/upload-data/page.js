@@ -80,13 +80,14 @@ export default function UploadResumePage() {
       toast.success("Success", { description: "Resume tailored successfully!", position: "top-center", duration: 2000 });
 
       localStorage.setItem('tailoredResume', JSON.stringify({
+        origionalText: data.resumeText,
         tailoredText: data.tailoredText,
         tailoredLatex: data.tailoredLatex
       }));
 
       setTimeout(() => {
         router.push('/dashboard/tailored-resume');
-      }, 2000);
+      }, 500);
 
     } catch (error) {
       toast.error("Error", { description: error.message, position: "top-center" });

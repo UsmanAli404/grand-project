@@ -93,6 +93,7 @@ export async function POST(req) {
 
     return NextResponse.json({
       message: 'Tailored resume created and stored successfully!',
+      resumeText: resumeContent,
       tailoredText: tailoredResumeText,
       tailoredLatex: tailoredResumeLatex
     }, { status: 200 });

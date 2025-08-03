@@ -101,7 +101,7 @@ export default function ResumeDetailPage() {
             </Button>
           </div>
           {/* <p className="mt-1 whitespace-pre-wrap">{entry.tailoredResumeText}</p> */}
-          <pre className="mt-2 p-2 rounded border overflow-x-auto text-sm">{entry.tailoredResumeText}</pre>
+          <pre className="mt-2 p-2 rounded border overflow-x-auto text-sm bg-gray-100 dark:bg-white dark:text-black">{entry.tailoredResumeText}</pre>
         </div>
 
         <div>
@@ -111,7 +111,7 @@ export default function ResumeDetailPage() {
               <ClipboardCopy className="w-4 h-4" />
             </Button>
           </div>
-          <pre className="mt-2 p-2 rounded border overflow-x-auto text-sm">{entry.tailoredResumeLatex}</pre>
+          <pre className="mt-2 p-2 rounded border overflow-x-auto text-sm bg-gray-100 dark:bg-white dark:text-black">{entry.tailoredResumeLatex}</pre>
         </div>
 
         <div className="text-xs text-gray-500">
